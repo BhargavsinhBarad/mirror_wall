@@ -10,8 +10,10 @@ class google extends StatefulWidget {
 }
 
 class _googleState extends State<google> {
+  String? searchString;
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
   List<String> bookmark = [];
-  dynamic link = "https://www.google.com/";
+  String link = "https://www.google.com/";
   TextEditingController search = TextEditingController();
   InAppWebViewController? inAppWebViewController;
   GlobalKey<ScaffoldState> scaffolfkey = GlobalKey<ScaffoldState>();
@@ -26,67 +28,57 @@ class _googleState extends State<google> {
           PopupMenuButton(
             onSelected: (value) {
               if ("book" == value) {
-                scaffolfkey.currentState!.showBottomSheet(
-                  (context) => Container(
-                    height: 400,
-                    width: double.infinity,
-                    child: Column(
-                      children: bookmark
-                          .map((e) => Center(
-                                child: Container(
-                                  height: 100,
-                                  width: double.infinity,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Text(e),
-                                      IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              bookmark.remove(e);
-                                            });
-                                          },
-                                          icon: Icon(
-                                              Icons.highlight_remove_sharp))
-                                    ],
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Container(
+                      height: 400,
+                      width: double.infinity,
+                      child: Column(
+                        children: bookmark
+                            .map((e) => Center(
+                                  child: Container(
+                                    height: 100,
+                                    width: double.infinity,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text(e),
+                                        IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                bookmark.remove(e);
+                                              });
+                                            },
+                                            icon: Icon(
+                                                Icons.highlight_remove_sharp))
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ))
-                          .toList(),
-                    ),
-                  ),
+                                ))
+                            .toList(),
+                      ),
+                    );
+                  },
                 );
               } else if ("search" == value) {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
                     title: Text("Search Engine"),
-                    content: Column(
-                      children: [
-                        RadioListTile(
-                          title: Text("Google"),
-                          value: "https://www.google.com/",
-                          groupValue: link,
-                          onChanged: (val) {
-                            setState(() {
-                              link = val;
-                            });
-                            inAppWebViewController!.loadUrl(
-                              urlRequest: URLRequest(
-                                url: Uri.tryParse(link),
-                              ),
-                            );
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        RadioListTile(
-                            title: Text("Yahoo"),
-                            value: "https://www.yahoo.com/",
+                    content: Container(
+                      height: 250,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          RadioListTile(
+                            title: Text("Google"),
+                            value: "https://www.google.com/",
                             groupValue: link,
                             onChanged: (val) {
                               setState(() {
-                                link = val;
+                                link = val!;
                               });
                               inAppWebViewController!.loadUrl(
                                 urlRequest: URLRequest(
@@ -94,38 +86,55 @@ class _googleState extends State<google> {
                                 ),
                               );
                               Navigator.of(context).pop();
-                            }),
-                        RadioListTile(
-                            title: Text("Bing"),
-                            value: "https://www.bing.com/",
-                            groupValue: link,
-                            onChanged: (val) {
-                              setState(() {
-                                link = val;
-                              });
-                              inAppWebViewController!.loadUrl(
-                                urlRequest: URLRequest(
-                                  url: Uri.tryParse(link),
-                                ),
-                              );
-                              Navigator.of(context).pop();
-                            }),
-                        RadioListTile(
-                            title: Text("Duck Duck Go"),
-                            value: "https://www.duckduckgo.com/",
-                            groupValue: link,
-                            onChanged: (val) {
-                              setState(() {
-                                link = val;
-                              });
-                              inAppWebViewController!.loadUrl(
-                                urlRequest: URLRequest(
-                                  url: Uri.tryParse(link),
-                                ),
-                              );
-                              Navigator.of(context).pop();
-                            }),
-                      ],
+                            },
+                          ),
+                          RadioListTile(
+                              title: Text("Yahoo"),
+                              value: "https://www.yahoo.com/",
+                              groupValue: link,
+                              onChanged: (val) {
+                                setState(() {
+                                  link = val!;
+                                });
+                                inAppWebViewController!.loadUrl(
+                                  urlRequest: URLRequest(
+                                    url: Uri.tryParse(link),
+                                  ),
+                                );
+                                Navigator.of(context).pop();
+                              }),
+                          RadioListTile(
+                              title: Text("Bing"),
+                              value: "https://www.bing.com/",
+                              groupValue: link,
+                              onChanged: (val) {
+                                setState(() {
+                                  link = val!;
+                                });
+                                inAppWebViewController!.loadUrl(
+                                  urlRequest: URLRequest(
+                                    url: Uri.tryParse(link),
+                                  ),
+                                );
+                                Navigator.of(context).pop();
+                              }),
+                          RadioListTile(
+                              title: Text("Duck Duck Go"),
+                              value: "https://www.duckduckgo.com/",
+                              groupValue: link,
+                              onChanged: (val) {
+                                setState(() {
+                                  link = val!;
+                                });
+                                inAppWebViewController!.loadUrl(
+                                  urlRequest: URLRequest(
+                                    url: Uri.tryParse(link),
+                                  ),
+                                );
+                                Navigator.of(context).pop();
+                              }),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -187,89 +196,107 @@ class _googleState extends State<google> {
         Expanded(
           flex: 2,
           child: Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextFormField(
-                  controller: search,
-                  decoration: InputDecoration(
-                    hintText: "Search on Google...",
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        inAppWebViewController?.loadUrl(
-                          urlRequest: URLRequest(
-                            url: Uri.parse(
-                                "https://www.google.com/search?q=${search.text}"),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Form(
+                    key: formKey,
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: TextFormField(
+                        onSaved: (val) {
+                          searchString = val;
+                        },
+                        controller: search,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(40),
                           ),
-                        );
-                      },
-                      icon: Icon(Icons.send),
+                          hintText: "Search on Google...",
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              if (formKey.currentState!.validate()) {
+                                formKey.currentState!.save();
+                                inAppWebViewController?.loadUrl(
+                                  urlRequest: URLRequest(
+                                    url: Uri.parse(
+                                        "https://www.google.com/search?q=${searchString}"),
+                                  ),
+                                );
+                                search.clear();
+                              }
+                            },
+                            icon: Icon(Icons.send),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        inAppWebViewController!.loadUrl(
-                          urlRequest: URLRequest(
-                            url: Uri.parse("https://www.google.com/"),
-                          ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.home_filled,
-                        size: 45,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          inAppWebViewController!.loadUrl(
+                            urlRequest: URLRequest(
+                              url: Uri.parse("https://www.google.com/"),
+                            ),
+                          );
+                        },
+                        icon: Icon(
+                          Icons.home_filled,
+                          size: 35,
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        if (inAppWebViewController?.canGoForward() != null) {
-                          inAppWebViewController!.goForward();
-                        }
-                      },
-                      icon: Icon(
-                        Icons.arrow_right,
-                        size: 65,
+                      IconButton(
+                        onPressed: () {
+                          if (inAppWebViewController?.canGoForward() != null) {
+                            inAppWebViewController!.goForward();
+                          }
+                        },
+                        icon: Icon(
+                          Icons.arrow_forward_ios,
+                          size: 30,
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        bookmark.add("${link}search?q=${search.text}");
-                      },
-                      icon: Icon(
-                        Icons.bookmark,
-                        size: 45,
+                      IconButton(
+                        onPressed: () {
+                          bookmark.add("${link}search?q=${searchString}");
+                        },
+                        icon: Icon(
+                          Icons.bookmark,
+                          size: 35,
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        if (inAppWebViewController?.canGoBack() != null) {
-                          inAppWebViewController!.goBack();
-                        }
-                      },
-                      icon: Icon(
-                        Icons.arrow_left_outlined,
-                        size: 65,
+                      IconButton(
+                        onPressed: () {
+                          if (inAppWebViewController?.canGoBack() != null) {
+                            inAppWebViewController!.goBack();
+                          }
+                        },
+                        icon: Icon(
+                          Icons.arrow_back_ios,
+                          size: 30,
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        inAppWebViewController!.loadUrl(
-                          urlRequest: URLRequest(
-                            url: Uri.parse("https://www.google.com/"),
-                          ),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.refresh,
-                        size: 45,
+                      IconButton(
+                        onPressed: () {
+                          inAppWebViewController!.loadUrl(
+                            urlRequest: URLRequest(
+                              url: Uri.parse("https://www.google.com/"),
+                            ),
+                          );
+                        },
+                        icon: Icon(
+                          Icons.refresh,
+                          size: 35,
+                        ),
                       ),
-                    ),
-                  ],
-                )
-              ],
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ),
